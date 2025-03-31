@@ -68,6 +68,8 @@ export function defineShortcuts(config: MaybeRef<ShortcutsConfig>, options: Shor
 
   const activeElement = useActiveElement()
 
+  const macOS = computed(() => navigator && navigator.userAgent && navigator.userAgent.match(/Macintosh;/))
+
   const onKeyDown = (e: KeyboardEvent) => {
     // Input autocomplete triggers a keydown event
     if (!e.key) {
@@ -177,6 +179,12 @@ export function defineShortcuts(config: MaybeRef<ShortcutsConfig>, options: Shor
         }
       }
       shortcut.chained = chained
+
+      // Convert Meta to Ctrl for non-MacOS
+      if (!macOS.value && shortcut.metaKey && !shortcut.ctrlKey) {
+        shortcut.metaKey = false
+        shortcut.ctrlKey = true
+      }
 
       // Retrieve handler function
       if (typeof shortcutConfig === 'function') {
